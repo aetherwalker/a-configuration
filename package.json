@@ -1,0 +1,25 @@
+{
+  "name": "a-configuration",
+  "version": "0.0.1",
+  "description": "For quick configurations based on a set file structure",
+  "main": "index.js",
+  "scripts": {
+    "test": "grunt spec"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/aetherwalker/a-configuration.git"
+  },
+  "keywords": [
+    "configuration"
+  ],
+  "author": "aetherwalker@refugesystems.net",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/aetherwalker/a-configuration/issues"
+  },
+  "homepage": "https://github.com/aetherwalker/a-configuration#readme",
+  "devDependencies": {
+    "grunt": "^1.0.1"
+  }
+}
