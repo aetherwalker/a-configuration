@@ -6,6 +6,7 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks("gruntify-eslint");
 	
 	var gruntConfiguration = {
+		pkg: grunt.file.readJSON("package.json"),
 		eslint: {
 			options: {
 				ecmaFeatures: {
@@ -119,7 +120,7 @@ module.exports = function(grunt) {
 				version: "<%= pkg.version %>",
 				url: "<%= pkg.homepage %>",
 				options: {
-					paths: "./app",
+					paths: "./lib",
 					outdir: "./docs"
 				}
 			}
@@ -128,6 +129,7 @@ module.exports = function(grunt) {
 	
 	grunt.initConfig(gruntConfiguration);
 	grunt.registerTask("spec", ["eslint", "jasmine_nodejs:unit"]);
+	grunt.registerTask("build", ["spec", "yuidoc"]);
 	grunt.registerTask("dev", ["spec", "watch"]);
 	grunt.registerTask("default", ["spec"]);
 };
