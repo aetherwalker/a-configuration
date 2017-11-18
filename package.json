@@ -20,6 +20,13 @@
   },
   "homepage": "https://github.com/aetherwalker/a-configuration#readme",
   "devDependencies": {
-    "grunt": "^1.0.1"
+    "grunt": "^1.0.1",
+    "grunt-contrib-watch": "^1.0.0",
+    "grunt-contrib-yuidoc": "^1.0.0",
+    "grunt-jasmine-nodejs": "^1.6.0",
+    "gruntify-eslint": "^4.0.0",
+    "jasmine-core": "^2.8.0",
+    "load-grunt-tasks": "^3.5.2",
+    "sandboxed-module": "^2.0.3"
   }
 }
