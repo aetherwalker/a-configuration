@@ -19,6 +19,8 @@
     "url": "https://github.com/aetherwalker/a-configuration/issues"
   },
   "homepage": "https://github.com/aetherwalker/a-configuration#readme",
+  "dependencies": {
+  },
   "devDependencies": {
     "grunt": "^1.0.1",
     "grunt-contrib-watch": "^1.0.0",
