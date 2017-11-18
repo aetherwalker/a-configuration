@@ -39,8 +39,8 @@ Default: null
 Relative file path to where the "local" configurations are for your application. These configurations are applied _first_ and can be overwritten by similar keys in local configurations.
 
 #### ignore
-Type: `String`
-Aliases: -
+Type: `String`  
+Aliases: -  
 Default: "_"
 
 Used to determine if the _first_ character of a key indicates if that key should be ignored. By default, only the '_' character indicates that a key should be ignored. So if a configuration file has the key '_' at the top level, then that key will not be added to the configuration. The ignore character does not apply to key names below the top level.
