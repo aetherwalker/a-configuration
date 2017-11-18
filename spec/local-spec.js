@@ -1,4 +1,4 @@
-describe("Local configuration read", function() {
+describe("Application configuration", function() {
 	var configuration, source;
 	var fs = mocks.fs;
 
@@ -27,7 +27,7 @@ describe("Local configuration read", function() {
 		};
 	});
 
-	it("Reads on configuration file", function() {
+	it("Reads a single application configuration file", function() {
 		configuration = testConfiguration();
 		expect(fs.readFileSync).toHaveBeenCalled();
 		expect(configuration.key1).toBe(source[0].key1);

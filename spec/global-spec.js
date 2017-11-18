@@ -1,3 +1,3 @@
-describe("Global configuration read", function() {
+describe("System configuration", function() {
 	
 });
