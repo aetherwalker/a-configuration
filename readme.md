@@ -121,11 +121,6 @@ For this example lets assume there is the following:
 		"host": "mongo.example.com",
 		"user": "mongo-user",
 		"pass": "mongo-pass"
-	},
-	"redis": {
-		"host": "redis.example.com",
-		"user": "redis-user",
-		"pass": "redis-pass"
 	}
 }
 ```
@@ -148,6 +143,18 @@ Relative paths should start with a "." (ie. "./" or "../"), otherwise the path i
 	...
 	"aconfiguration": {
 		"system": "/opt/system-configurations/"
+	}
+}
+```
+
+Then the configuration will resolve as:
+```json
+{
+	"mongo": {
+		"host": "mongo.example.com",
+		"user": "mongo-user",
+		"pass": "mongo-pass",
+		"database": "myapp"
 	}
 }
 ```
