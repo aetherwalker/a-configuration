@@ -70,7 +70,7 @@ module.exports = function(grunt) {
 					/* Manually Fixable */
 					"max-depth": 2,
 					"no-unused-vars": [1, {
-							varsIgnorePattern: "^drop"
+							varsIgnorePattern: "^(drop|opt|_)" // "opt" For optional vars that maybe pending and "_" for similar
 						}
 					],
 					"camelcase": 1,
