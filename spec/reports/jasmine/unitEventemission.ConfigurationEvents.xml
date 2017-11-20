@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites>
+ <testsuite name="Event emission.Configuration Events" timestamp="2017-11-20T02:11:03" hostname="localhost" time="0.034" errors="0" tests="7" skipped="1" disabled="0" failures="0">
+  <testcase classname="Event emission.Configuration Events" name="Fulfils the _await promise" time="0.004" />
+  <testcase classname="Event emission.Configuration Events" name="Fails the _await promise for missing file" time="0.006" />
+  <testcase classname="Event emission.Configuration Events" name="Fails the _await promise for failed module resolutions" time="0.002">
+   <skipped message="Temporarily disabled with xit" />
+  </testcase>
+  <testcase classname="Event emission.Configuration Events" name="Emits a failed event when a file is missing" time="0.003" />
+  <testcase classname="Event emission.Configuration Events" name="Emits a loaded event when complete with a signle file" time="0.003" />
+  <testcase classname="Event emission.Configuration Events" name="Emits a loaded event when complete with multiple files" time="0.006" />
+  <testcase classname="Event emission.Configuration Events" name="Emits a loaded event when complete with module" time="0.007" />
+ </testsuite>
+</testsuites>

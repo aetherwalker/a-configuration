@@ -22,6 +22,7 @@ module.exports = function(grunt) {
 					"require",
 					"process",
 					"global",
+					"setTimeout",
 					"mocks"
 				],
 				/* http://eslint.org/docs/rules/ */
@@ -34,7 +35,8 @@ module.exports = function(grunt) {
 					"no-undef": 2,
 					"semi": 2,
 					"indent": [2, "tab", {
-						"MemberExpression": 0
+						"MemberExpression": 0,
+						"SwitchCase": 1
 					}],
 					"no-mixed-spaces-and-tabs": 2,
 					"new-parens": 2,
@@ -43,6 +45,12 @@ module.exports = function(grunt) {
 						"after": true,
 						"overrides": {
 							"if": {
+								"after": false
+							},
+							"while": {
+								"after": false
+							},
+							"switch": {
 								"after": false
 							},
 							"catch": {

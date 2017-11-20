@@ -1,3 +1,0 @@
-describe("System configuration", function() {
-	
-});
