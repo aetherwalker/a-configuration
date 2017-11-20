@@ -14,9 +14,14 @@ global.requireUnit = function(path, requires, globals, locals) {
 
 global.testConfiguration = function(requires, globals, locals) {
 	requires = requires || {};
-	//requires.events = global.mocks.events; // This is omitted as the EventEmitter is an integrol part of the system and should be tested as such
-	requires["/../../../app/configuration/three.js"] = global.mocks.module;
 	requires.fs = global.mocks.fs;
+
+	// TODO:
+	// Module tests pending resolution of https://github.com/felixge/node-sandboxed-module/issues/64
+	//requires["/../../../app/configuration/three.js"] = global.mocks.module;
+	
+	// Note:
+	//requires.events = global.mocks.events; // This is omitted as the EventEmitter is an integrol part of the system and should be tested as such
 	
 	locals = locals || {};
 	locals.__dirname = locals.__dirname || "";
