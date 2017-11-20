@@ -17,7 +17,7 @@
                 <h1><img src="../assets/css/logo.png" title="a-configuration" width="117" height="52"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.0.1</em>
+            <em>API Docs for: 1.1.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -99,6 +99,8 @@ property is provided as a Promise to allow for waiting for the full configuratio
 extends the EventEmitter class so that <code>configuration.on</code> and similar methods are simply available
 without needing to remember referencing such as <code>configuration._events.on</code>, however the extended
 event emitted is also available as _events to allow for key collision if needed.</p>
+<p>Additionally, this module binds a listener to the &quot;SIGHUP&quot; Process Event to trigger configuration
+reload events.</p>
 
 </div>
 

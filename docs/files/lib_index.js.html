@@ -17,7 +17,7 @@
                 <h1><img src="../assets/css/logo.png" title="a-configuration" width="117" height="52"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.0.1</em>
+            <em>API Docs for: 1.1.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -98,6 +98,9 @@
  * without needing to remember referencing such as &#x60;configuration._events.on&#x60;, however the extended
  * event emitted is also available as _events to allow for key collision if needed.
  * 
+ * Additionally, this module binds a listener to the &quot;SIGHUP&quot; Process Event to trigger configuration
+ * reload events.
+ * 
  * @module a-configuration
  * @main
  * @class Configuration
@@ -105,13 +108,9 @@
  * @constructor
  * @static
  */
-var root = __dirname.replace(/\\/g, &quot;/&quot;) + &quot;/../../../&quot;;
 var fs = require(&quot;fs&quot;);
+var root = __dirname.replace(/\\/g, &quot;/&quot;) + &quot;/../../../&quot;;
 var EventEmitter = require(&quot;events&quot;).EventEmitter;
-
-var extMongo = require(&quot;./extend/mongo&quot;);
-var extRedis = require(&quot;./extend/redis&quot;);
-var extPostgresql = require(&quot;./extend/postgresql&quot;);
 
 var appPackage;
 
@@ -120,10 +119,10 @@ module.exports.__proto__ = emitter;
 /**
  * Provides a reference to the extended event emitter to allow for key collisions
  * off of the configuration object itself.
- * @property _events
+ * @property _emitter
  * @type EventEmitter
  */
-module.exports._events = emitter;
+module.exports._emitter = emitter;
 
 /**
  * Maps event names to their current name for consistency.
@@ -132,11 +131,18 @@ module.exports._events = emitter;
  * @private
  */
 var events = {
-	&quot;started&quot;: &quot;started&quot;,
-	&quot;initialized&quot;: &quot;initialized&quot;,
 	&quot;loaded&quot;: &quot;loaded&quot;,
-	&quot;errored&quot;: &quot;errored&quot;
+	&quot;errored&quot;: &quot;failed&quot;
 };
+
+/**
+ * Tracks included javascript file configurations so that reloads can be triggered
+ * via their functional invocations.
+ * @property loaded
+ * @type Object
+ * @private
+ */
+var loaded = {};
 
 /**
  * Called after the first completion of the second load stage.
@@ -172,8 +178,6 @@ module.exports._await = new Promise(function(done, fail) {
  */
 var readJSON = function(path) {
 	var contents = fs.readFileSync(path, &quot;utf8&quot;);
-
-	
 	if(contents === undefined || contents === null) {
 		throw new Error(&quot;can not load &quot;  + path);
 	}
@@ -189,94 +193,13 @@ var readJSON = function(path) {
 
 /**
  * 
- * @method loadFile
- * @private
- * @param {String} file Filename to load
- */
-var loadFile = function(file) {
-	file = readJSON(file);
-	Object.keys(file).forEach(function(key) {
-		if(appPackage.aconfiguration.ignore.indexOf(key[0]) === -1) {
-			if(module.exports[key]) {
-				Object.assign(module.exports[key], file[key]);
-			} else {
-				module.exports[key] = file[key];
-			}
-		}
-	});
-};
-
-/**
- * 
- * @method isJSON
+ * @method getExt
  * @private
  * @param {String} path File name or complete file path.
  * @return {Boolean}
  */
-var isJSON = function(path) {
-	var index = path.lastIndexOf(&quot;.&quot;);
-	index = path.substring(index).toLowerCase();
-	return index === &quot;.json&quot;;
-};
-
-/**
- * 
- * @method loadMongo
- * @private
- * @return {Promise}
- */
-var loadMongo = function() {
-	return new Promise(function(done, fail) {
-		if(appPackage.aconfiguration.mongo) {
-			if(extMongo.load) {
-				
-			} else {
-				fail(new Error(&quot;No support for MongoDB found.&quot;));
-			}
-		} else {
-			done();
-		}
-	});
-};
-
-/**
- * 
- * @method loadRedis
- * @private
- * @return {Promise}
- */
-var loadRedis = function() {
-	return new Promise(function(done, fail) {
-		if(appPackage.aconfiguration.redis) {
-			if(extRedis.load) {
-				
-			} else {
-				fail(new Error(&quot;No support for Redis found.&quot;));
-			}
-		} else {
-			done();
-		}
-	});
-};
-
-/**
- * 
- * @method loadPostgresql
- * @private
- * @return {Promise}
- */
-var loadPostgresql = function() {
-	return new Promise(function(done, fail) {
-		if(appPackage.aconfiguration.postgresql) {
-			if(extPostgresql.load) {
-				
-			} else {
-				fail(new Error(&quot;No support for PostgreSQL found.&quot;));
-			}
-		} else {
-			done();
-		}
-	});
+var getExt = function(path) {
+	return path.substring(path.lastIndexOf(&quot;.&quot;)).toLowerCase();
 };
 
 /**
@@ -290,10 +213,15 @@ var loadFinished = function() {
 	/**
 	 * 
 	 * @event loaded
-	 * @param {Configuration} conf The configuration that finished loading.
+	 * @param {Configuration} conf This configuration that finished loading.
 	 */
-	emitter.emit(events.loaded, module.exports);
 	initialized.success();
+	setTimeout(function() {
+		/* Some failures happen in the module initialization and throw before listeners
+		 * have a chance to bind. To allow this, the event emission is off loaded.
+		 */
+		emitter.emit(events.loaded, module.exports);
+	}, 0);
 };
 
 /**
@@ -304,13 +232,18 @@ var loadFinished = function() {
  */
 var loadFailed = function(exception) {
 	/**
-	 * 
-	 * @event errored
-	 * @param {Configuration} conf The configuration that finished loading.
+	 * Thrown in the case of an error in any stage.
+	 * @event failed
+	 * @param {Configuration} conf This configuration that finished loading.
 	 * @param {Error} error Thrown exception
 	 */
-	emitter.emit(events.errored, module.exports, exception);
-	initialized.failure();
+	initialized.failure(exception);
+	setTimeout(function() {
+		/* Some failures happen in the module initialization and throw before listeners
+		 * have a chance to bind. To allow this, the event emission is off loaded.
+		 */
+		emitter.emit(events.errored, module.exports, exception);
+	}, 0);
 };
 
 /**
@@ -319,19 +252,86 @@ var loadFailed = function(exception) {
  * @private
  */
 var loadConfigurations = function() {
-	var path, files;
-	
+	var files = [], ensure = [];
+
+	/**
+	 * 
+	 * @method loadFile
+	 * @private
+	 * @param {String} file Filename to load.
+	 */
+	var loadFile = function(file) {
+		switch(getExt(file)) {
+			case &quot;.json&quot;:
+				resolveConfiguration(readJSON(file));
+				break;
+			case &quot;.js&quot;:
+				if(!loaded[file]) {
+					if(file[0] === &quot;.&quot; || file[0] === &quot;/&quot; || (file[1] === &quot;:&quot; &amp;&amp; file[2] === &quot;\\&quot;)) {
+						loaded[file] = require(file);
+					} else {
+						loaded[file] = require(root + file);
+					}
+				}
+				// TODO:
+				// The pressence of Resolve is considered enough here to allow for unit testing to continue
+				// as the user should be aware of the configuration usage anyway. When Issue 44 is fixed,
+				// this should be updated to use instanceof
+				if(loaded[file].resolve /*instanceof Function*/) {
+					resolveConfiguration(loaded[file].resolve(module.exports));
+				}
+				break;
+			default:
+				if(fs.lstatSync(file).isDirectory()) {
+					fs.readdirSync(file).forEach(function(path) {
+						loadFile(file + path);
+					});
+				} else {
+					throw new Error(&quot;Unknown file type: &quot; + file);
+				}
+		}
+	};
+
+	/**
+	 * 
+	 * @method resolveConfiguration
+	 * @private
+	 * @param {Object} conf Configuration to resolve against the current export.
+	 */
+	var resolveConfiguration = function(conf) {
+		// TODO:
+		// Due to sandbox issues, a string compare fallback is present
+		// https://github.com/felixge/node-sandboxed-module/issues/44
+		conf = conf || {};
+		if(conf instanceof Promise || conf.toString() === &quot;[object Promise]&quot;) {
+			conf.then(resolveConfiguration);
+			ensure.push(conf);
+		} else {
+			Object.keys(conf).forEach(function(key) {
+				if(appPackage.aconfiguration.ignore.indexOf(key[0]) === -1) {
+					if(module.exports[key] &amp;&amp; typeof module.exports[key] === &quot;object&quot;) {
+						Object.assign(module.exports[key], conf[key]);
+					} else {
+						module.exports[key] = conf[key];
+					}
+				}
+			});
+		}
+	};
+
 	try {
 		appPackage = readJSON(root + &quot;package.json&quot;);
 	} catch(exception) {
 		appPackage = {};
 	}
-	
+
 	appPackage.aconfiguration = appPackage.aconfiguration || {};
+	appPackage.aconfiguration.masks = appPackage.aconfiguration.masks || appPackage.aconfiguration.initial;
 	appPackage.aconfiguration.locals = appPackage.aconfiguration.application || appPackage.aconfiguration.app || appPackage.aconfiguration.locals || appPackage.aconfiguration.directory || &quot;app/configuration/&quot;;
 	appPackage.aconfiguration.globals = appPackage.aconfiguration.system || appPackage.aconfiguration.sys || appPackage.aconfiguration.globals;
+	appPackage.aconfiguration.final = appPackage.aconfiguration.final || appPackage.aconfiguration.finish;
 	appPackage.aconfiguration.ignore = appPackage.aconfiguration.ignore || &quot;_&quot;;
-	
+
 	if(appPackage.aconfiguration.globals &amp;&amp; appPackage.aconfiguration.globals[appPackage.aconfiguration.globals.length-1] !== &quot;/&quot;) {
 		appPackage.aconfiguration.globals += &quot;/&quot;;
 	}
@@ -339,50 +339,79 @@ var loadConfigurations = function() {
 		appPackage.aconfiguration.locals += &quot;/&quot;;
 	}
 
-	/**
-	 * 
-	 * @event started
-	 * @param {Configuration} conf The configuration that finished loading.
-	 */
-	emitter.emit(events.started, module.exports);
-
 	try {
-		files = fs.readdirSync(root + appPackage.aconfiguration.locals);
-		files.forEach(function(file) {
-			if(isJSON(file)) {
-				loadFile(root + appPackage.aconfiguration.locals + file);
+		if(appPackage.aconfiguration.masks) {
+			if(appPackage.aconfiguration.masks[0] === &quot;.&quot;) {
+				files.push(root + appPackage.aconfiguration.masks);
+			} else {
+				files.push(appPackage.aconfiguration.masks);
 			}
-		});
-	
+		}
+
 		if(appPackage.aconfiguration.globals) {
 			if(appPackage.aconfiguration.globals[0] === &quot;.&quot;) {
-				path = root + appPackage.aconfiguration.globals;
+				files.push(root + appPackage.aconfiguration.globals);
 			} else {
-				path = appPackage.aconfiguration.globals;
+				files.push(appPackage.aconfiguration.globals);
 			}
-			files = fs.readdirSync(appPackage.aconfiguration.globals);
-			files.forEach(function(file) {
-				if(isJSON(file)) {
-					loadFile(path + file);
+		}
+
+		if(appPackage.aconfiguration.locals) {
+			if(appPackage.aconfiguration.locals[0] === &quot;.&quot;) {
+				files.push(root + appPackage.aconfiguration.locals);
+			} else {
+				files.push(appPackage.aconfiguration.locals);
+			}
+		}
+
+		if(appPackage.aconfiguration.files) {
+			appPackage.aconfiguration.files.forEach(function(file) {
+				if(file === &quot;.&quot;) {
+					files.push(root + file);
+				} else {
+					files.push(file);
 				}
 			});
 		}
-	
-		/**
-		 * This event can occur more than once.
-		 * @event initialized
-		 * @param {Configuration} conf The configuration that finished loading.
-		 */
-		emitter.emit(events.initialized, module.exports);
-		
-		loadMongo()
-		.then(loadRedis)
-		.then(loadPostgresql)
+
+		if(appPackage.aconfiguration.final) {
+			if(appPackage.aconfiguration.final[0] === &quot;.&quot;) {
+				files.push(root + appPackage.aconfiguration.final);
+			} else {
+				files.push(appPackage.aconfiguration.final);
+			}
+		}
+
+		files.forEach(loadFile);
+
+		Promise.all(ensure)
 		.then(loadFinished)
 		.catch(loadFailed);
 	} catch(exception) {
 		loadFailed(exception);
 	}
+};
+
+/**
+ * When true, the configuration is updating its values. This does not block
+ * the values from being used, but does indicate that the module is busy and
+ * operations that would cause further updates should be blocked.
+ * @property reloading
+ * @type {Boolean}
+ */
+var reloading = false;
+
+/**
+ * Indicate if the configuration module is currently updating.
+ * 
+ * This currently responds to the following states:  
+ * + reloading
+ * 
+ * @method isLocked
+ * @return {Boolean}
+ */
+var isLocked = function() {
+	return reloading;
 };
 
 /**
@@ -396,10 +425,45 @@ var loadConfigurations = function() {
  * the way in which the configurations are assembled. Keys at the third level or
  * deeper will fall off _IF_ the second level key has an update applied.
  * @method _reload
+ * @return {Promise} Resolves with the final status of the configuration loading;
+ * 		See: &quot;loaded&quot; and &quot;error&quot; events.
  */
-module.exports._reload = loadConfigurations;
+module.exports._reload = function() {
+	return new Promise(function(done, fail) {
+		if(isLocked()) {
+			fail(new Error(&quot;Reload in process&quot;));
+		} else {
+			reloading = true;
+			module.exports.once(events.loaded, function() {
+				reloading = false;
+				module.exports.removeListener(events.errored, fail);
+				done();
+			});
+			module.exports.once(events.errored, function(err) {
+				reloading = false;
+				module.exports.removeListener(events.loaded, done);
+				fail(err);
+			});
+			loadConfigurations();
+		}
+	});
+};
+
 /* Capture SIGHUP to reload configuration */
-process.on(&quot;SIGHUP&quot;, loadConfigurations);
+process.on(&quot;SIGHUP&quot;, function() {
+	if(!isLocked()) {
+		reloading = true;
+		var release = function() {
+			module.exports.removeListener(events.loaded, release);
+			module.exports.removeListener(events.errored, release);
+			reloading = false;
+		};
+		module.exports.once(events.loaded, release);
+		module.exports.once(events.errored, release);
+		loadConfigurations();
+	}
+});
+
 loadConfigurations();
 
     </pre>

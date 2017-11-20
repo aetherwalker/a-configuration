@@ -17,7 +17,7 @@
                 <h1><img src="../assets/css/logo.png" title="a-configuration" width="117" height="52"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.0.1</em>
+            <em>API Docs for: 1.1.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -101,6 +101,8 @@ property is provided as a Promise to allow for waiting for the full configuratio
 extends the EventEmitter class so that <code>configuration.on</code> and similar methods are simply available
 without needing to remember referencing such as <code>configuration._events.on</code>, however the extended
 event emitted is also available as _events to allow for key collision if needed.</p>
+<p>Additionally, this module binds a listener to the &quot;SIGHUP&quot; Process Event to trigger configuration
+reload events.</p>
 
 </div>
 
@@ -127,6 +129,10 @@ event emitted is also available as _events to allow for key collision if needed.
 
                             </li>
                             <li class="index-item method private">
+                                <a href="#method_getExt">getExt</a>
+
+                            </li>
+                            <li class="index-item method private">
                                 <a href="#method_initialized.failure">initialized.failure</a>
 
                             </li>
@@ -134,8 +140,8 @@ event emitted is also available as _events to allow for key collision if needed.
                                 <a href="#method_initialized.success">initialized.success</a>
 
                             </li>
-                            <li class="index-item method private">
-                                <a href="#method_isJSON">isJSON</a>
+                            <li class="index-item method">
+                                <a href="#method_isLocked">isLocked</a>
 
                             </li>
                             <li class="index-item method private">
@@ -155,19 +161,11 @@ event emitted is also available as _events to allow for key collision if needed.
 
                             </li>
                             <li class="index-item method private">
-                                <a href="#method_loadMongo">loadMongo</a>
-
-                            </li>
-                            <li class="index-item method private">
-                                <a href="#method_loadPostgresql">loadPostgresql</a>
-
-                            </li>
-                            <li class="index-item method private">
-                                <a href="#method_loadRedis">loadRedis</a>
-
-                            </li>
-                            <li class="index-item method private">
                                 <a href="#method_readJSON">readJSON</a>
+
+                            </li>
+                            <li class="index-item method private">
+                                <a href="#method_resolveConfiguration">resolveConfiguration</a>
 
                             </li>
                     </ul>
@@ -182,11 +180,19 @@ event emitted is also available as _events to allow for key collision if needed.
 
                             </li>
                             <li class="index-item property">
-                                <a href="#property__events">_events</a>
+                                <a href="#property__emitter">_emitter</a>
 
                             </li>
                             <li class="index-item property private">
                                 <a href="#property__events">_events</a>
+
+                            </li>
+                            <li class="index-item property private">
+                                <a href="#property_loaded">loaded</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_reloading">reloading</a>
 
                             </li>
                     </ul>
@@ -198,19 +204,11 @@ event emitted is also available as _events to allow for key collision if needed.
 
                     <ul class="index-list events">
                             <li class="index-item event">
-                                <a href="#event_errored">errored</a>
-
-                            </li>
-                            <li class="index-item event">
-                                <a href="#event_initialized">initialized</a>
+                                <a href="#event_failed">failed</a>
 
                             </li>
                             <li class="index-item event">
                                 <a href="#event_loaded">loaded</a>
-
-                            </li>
-                            <li class="index-item event">
-                                <a href="#event_started">started</a>
 
                             </li>
                     </ul>
@@ -225,6 +223,9 @@ event emitted is also available as _events to allow for key collision if needed.
 
         <span class="paren">()</span>
 
+        <span class="returns-inline">
+            <span class="type">Promise</span>
+        </span>
 
 
 
@@ -235,7 +236,7 @@ event emitted is also available as _events to allow for key collision if needed.
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/lib_index.js.html#l305"><code>lib\index.js:305</code></a>
+        <a href="../files/lib_index.js.html#l334"><code>lib\index.js:334</code></a>
         </p>
 
 
@@ -254,6 +255,80 @@ deeper will fall off <em>IF</em> the second level key has an update applied.</p>
     </div>
 
 
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                        <span class="type">Promise</span>:
+                    <p>Resolves with the final status of the configuration loading;
+See: &quot;loaded&quot; and &quot;error&quot; events.</p>
+
+            </div>
+        </div>
+
+
+</div>
+<div id="method_getExt" class="method item private">
+    <h3 class="name"><code>getExt</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>path</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+        <span class="returns-inline">
+            <span class="type">Boolean</span>
+        </span>
+
+
+        <span class="flag private">private</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/lib_index.js.html#l111"><code>lib\index.js:111</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">path</code>
+                        <span class="type">String</span>
+
+
+                    <div class="param-description">
+                        <p>File name or complete file path.</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                        <span class="type">Boolean</span>:
+            </div>
+        </div>
 
 
 </div>
@@ -279,7 +354,7 @@ deeper will fall off <em>IF</em> the second level key has an update applied.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/lib_index.js.html#l63"><code>lib\index.js:63</code></a>
+        <a href="../files/lib_index.js.html#l69"><code>lib\index.js:69</code></a>
         </p>
 
 
@@ -328,7 +403,7 @@ deeper will fall off <em>IF</em> the second level key has an update applied.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/lib_index.js.html#l58"><code>lib\index.js:58</code></a>
+        <a href="../files/lib_index.js.html#l64"><code>lib\index.js:64</code></a>
         </p>
 
 
@@ -344,23 +419,16 @@ deeper will fall off <em>IF</em> the second level key has an update applied.</p>
 
 
 </div>
-<div id="method_isJSON" class="method item private">
-    <h3 class="name"><code>isJSON</code></h3>
+<div id="method_isLocked" class="method item">
+    <h3 class="name"><code>isLocked</code></h3>
 
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>path</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
+        <span class="paren">()</span>
 
         <span class="returns-inline">
             <span class="type">Boolean</span>
         </span>
 
 
-        <span class="flag private">private</span>
 
 
 
@@ -369,7 +437,7 @@ deeper will fall off <em>IF</em> the second level key has an update applied.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/lib_index.js.html#l126"><code>lib\index.js:126</code></a>
+        <a href="../files/lib_index.js.html#l321"><code>lib\index.js:321</code></a>
         </p>
 
 
@@ -377,26 +445,14 @@ deeper will fall off <em>IF</em> the second level key has an update applied.</p>
     </div>
 
     <div class="description">
-        
+        <p>Indicate if the configuration module is currently updating.</p>
+<p>This currently responds to the following states:</p>
+<ul>
+<li>reloading</li>
+</ul>
+
     </div>
 
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">path</code>
-                        <span class="type">String</span>
-
-
-                    <div class="param-description">
-                        <p>File name or complete file path.</p>
-
-                    </div>
-
-                </li>
-            </ul>
-        </div>
 
         <div class="returns">
             <h4>Returns:</h4>
@@ -424,7 +480,7 @@ deeper will fall off <em>IF</em> the second level key has an update applied.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/lib_index.js.html#l233"><code>lib\index.js:233</code></a>
+        <a href="../files/lib_index.js.html#l166"><code>lib\index.js:166</code></a>
         </p>
 
 
@@ -464,7 +520,7 @@ deeper will fall off <em>IF</em> the second level key has an update applied.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/lib_index.js.html#l199"><code>lib\index.js:199</code></a>
+        <a href="../files/lib_index.js.html#l122"><code>lib\index.js:122</code></a>
         </p>
 
 
@@ -526,7 +582,7 @@ deeper will fall off <em>IF</em> the second level key has an update applied.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/lib_index.js.html#l216"><code>lib\index.js:216</code></a>
+        <a href="../files/lib_index.js.html#l144"><code>lib\index.js:144</code></a>
         </p>
 
 
@@ -586,7 +642,7 @@ deeper will fall off <em>IF</em> the second level key has an update applied.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/lib_index.js.html#l107"><code>lib\index.js:107</code></a>
+        <a href="../files/lib_index.js.html#l174"><code>lib\index.js:174</code></a>
         </p>
 
 
@@ -607,7 +663,7 @@ deeper will fall off <em>IF</em> the second level key has an update applied.</p>
 
 
                     <div class="param-description">
-                        <p>Filename to load</p>
+                        <p>Filename to load.</p>
 
                     </div>
 
@@ -615,129 +671,6 @@ deeper will fall off <em>IF</em> the second level key has an update applied.</p>
             </ul>
         </div>
 
-
-
-</div>
-<div id="method_loadMongo" class="method item private">
-    <h3 class="name"><code>loadMongo</code></h3>
-
-        <span class="paren">()</span>
-
-        <span class="returns-inline">
-            <span class="type">Promise</span>
-        </span>
-
-
-        <span class="flag private">private</span>
-
-
-
-
-
-    <div class="meta">
-                <p>
-                Defined in
-        <a href="../files/lib_index.js.html#l139"><code>lib\index.js:139</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        
-    </div>
-
-
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                        <span class="type">Promise</span>:
-            </div>
-        </div>
-
-
-</div>
-<div id="method_loadPostgresql" class="method item private">
-    <h3 class="name"><code>loadPostgresql</code></h3>
-
-        <span class="paren">()</span>
-
-        <span class="returns-inline">
-            <span class="type">Promise</span>
-        </span>
-
-
-        <span class="flag private">private</span>
-
-
-
-
-
-    <div class="meta">
-                <p>
-                Defined in
-        <a href="../files/lib_index.js.html#l179"><code>lib\index.js:179</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        
-    </div>
-
-
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                        <span class="type">Promise</span>:
-            </div>
-        </div>
-
-
-</div>
-<div id="method_loadRedis" class="method item private">
-    <h3 class="name"><code>loadRedis</code></h3>
-
-        <span class="paren">()</span>
-
-        <span class="returns-inline">
-            <span class="type">Promise</span>
-        </span>
-
-
-        <span class="flag private">private</span>
-
-
-
-
-
-    <div class="meta">
-                <p>
-                Defined in
-        <a href="../files/lib_index.js.html#l159"><code>lib\index.js:159</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        
-    </div>
-
-
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                        <span class="type">Promise</span>:
-            </div>
-        </div>
 
 
 </div>
@@ -766,7 +699,7 @@ deeper will fall off <em>IF</em> the second level key has an update applied.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/lib_index.js.html#l83"><code>lib\index.js:83</code></a>
+        <a href="../files/lib_index.js.html#l89"><code>lib\index.js:89</code></a>
         </p>
 
 
@@ -804,6 +737,60 @@ deeper will fall off <em>IF</em> the second level key has an update applied.</p>
 
 
 </div>
+<div id="method_resolveConfiguration" class="method item private">
+    <h3 class="name"><code>resolveConfiguration</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>conf</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+        <span class="flag private">private</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/lib_index.js.html#l212"><code>lib\index.js:212</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">conf</code>
+                        <span class="type">Object</span>
+
+
+                    <div class="param-description">
+                        <p>Configuration to resolve against the current export.</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
             </div>
 
             <div id="properties" class="api-class-tabpanel">
@@ -820,7 +807,7 @@ deeper will fall off <em>IF</em> the second level key has an update applied.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/lib_index.js.html#l71"><code>lib\index.js:71</code></a>
+        <a href="../files/lib_index.js.html#l77"><code>lib\index.js:77</code></a>
         </p>
 
 
@@ -834,8 +821,8 @@ deeper will fall off <em>IF</em> the second level key has an update applied.</p>
 
 
 </div>
-<div id="property__events" class="property item">
-    <h3 class="name"><code>_events</code></h3>
+<div id="property__emitter" class="property item">
+    <h3 class="name"><code>_emitter</code></h3>
     <span class="type">EventEmitter</span>
 
 
@@ -845,7 +832,7 @@ deeper will fall off <em>IF</em> the second level key has an update applied.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/lib_index.js.html#l37"><code>lib\index.js:37</code></a>
+        <a href="../files/lib_index.js.html#l36"><code>lib\index.js:36</code></a>
         </p>
 
 
@@ -872,7 +859,7 @@ off of the configuration object itself.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/lib_index.js.html#l45"><code>lib\index.js:45</code></a>
+        <a href="../files/lib_index.js.html#l44"><code>lib\index.js:44</code></a>
         </p>
 
 
@@ -886,14 +873,68 @@ off of the configuration object itself.</p>
 
 
 </div>
+<div id="property_loaded" class="property item private">
+    <h3 class="name"><code>loaded</code></h3>
+    <span class="type">Object</span>
+
+
+        <span class="flag private">private</span>
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/lib_index.js.html#l55"><code>lib\index.js:55</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>Tracks included javascript file configurations so that reloads can be triggered
+via their functional invocations.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_reloading" class="property item">
+    <h3 class="name"><code>reloading</code></h3>
+    <span class="type">Boolean</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/lib_index.js.html#l312"><code>lib\index.js:312</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>When true, the configuration is updating its values. This does not block
+the values from being used, but does indicate that the module is busy and
+operations that would cause further updates should be blocked.</p>
+
+    </div>
+
+
+
+</div>
             </div>
 
 
             <div id="events" class="api-class-tabpanel">
                 <h2 class="off-left">Events</h2>
 
-                    <div id="event_errored" class="events item">
-                        <h3 class="name"><code>errored</code></h3>
+                    <div id="event_failed" class="events item">
+                        <h3 class="name"><code>failed</code></h3>
                         <span class="type"></span>
                     
                     
@@ -903,14 +944,15 @@ off of the configuration object itself.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/lib_index.js.html#l223"><code>lib\index.js:223</code></a>
+                            <a href="../files/lib_index.js.html#l151"><code>lib\index.js:151</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            
+                            <p>Thrown in the case of an error in any stage.</p>
+                    
                         </div>
                     
                             <div class="params">
@@ -923,7 +965,7 @@ off of the configuration object itself.</p>
                     
                     
                                         <div class="param-description">
-                                            <p>The configuration that finished loading.</p>
+                                            <p>This configuration that finished loading.</p>
                     
                                         </div>
                     
@@ -944,48 +986,6 @@ off of the configuration object itself.</p>
                     
                     
                     </div>
-                    <div id="event_initialized" class="events item">
-                        <h3 class="name"><code>initialized</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/lib_index.js.html#l288"><code>lib\index.js:288</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>This event can occur more than once.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">conf</code>
-                                            <span class="type"><a href="../classes/Configuration.html" class="crosslink">Configuration</a></span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>The configuration that finished loading.</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
                     <div id="event_loaded" class="events item">
                         <h3 class="name"><code>loaded</code></h3>
                         <span class="type"></span>
@@ -997,7 +997,7 @@ off of the configuration object itself.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/lib_index.js.html#l207"><code>lib\index.js:207</code></a>
+                            <a href="../files/lib_index.js.html#l130"><code>lib\index.js:130</code></a>
                             </p>
                     
                     
@@ -1017,48 +1017,7 @@ off of the configuration object itself.</p>
                     
                     
                                         <div class="param-description">
-                                            <p>The configuration that finished loading.</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="event_started" class="events item">
-                        <h3 class="name"><code>started</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/lib_index.js.html#l259"><code>lib\index.js:259</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">conf</code>
-                                            <span class="type"><a href="../classes/Configuration.html" class="crosslink">Configuration</a></span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>The configuration that finished loading.</p>
+                                            <p>This configuration that finished loading.</p>
                     
                                         </div>
                     

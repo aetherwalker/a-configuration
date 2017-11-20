@@ -2,7 +2,7 @@
     "project": {
         "name": "a-configuration",
         "description": "For quick configurations based on a set file structure",
-        "version": "1.0.1",
+        "version": "1.1.0",
         "url": "https://github.com/aetherwalker/a-configuration#readme"
     },
     "files": {
@@ -31,7 +31,7 @@
             "tag": "module",
             "file": "lib\\index.js",
             "line": 3,
-            "description": "Configurations load in 2 stages.\n\nThe first stage is a blocking file read to provide base data for the application and base configurations\nas described by the system.\n\nThe second stage is to load data from extended data sources in a non-blocking fashion. A `_await`\nproperty is provided as a Promise to allow for waiting for the full configuration load if desired. \n\nNote that as this extends an EventEmitter, colliding key names should be avoided, such as \"on\" and\n\"once\". Due to the nature of the EventEmitter properties and for simplicity, Configuration merely\nextends the EventEmitter class so that `configuration.on` and similar methods are simply available\nwithout needing to remember referencing such as `configuration._events.on`, however the extended\nevent emitted is also available as _events to allow for key collision if needed.",
+            "description": "Configurations load in 2 stages.\n\nThe first stage is a blocking file read to provide base data for the application and base configurations\nas described by the system.\n\nThe second stage is to load data from extended data sources in a non-blocking fashion. A `_await`\nproperty is provided as a Promise to allow for waiting for the full configuration load if desired. \n\nNote that as this extends an EventEmitter, colliding key names should be avoided, such as \"on\" and\n\"once\". Due to the nature of the EventEmitter properties and for simplicity, Configuration merely\nextends the EventEmitter class so that `configuration.on` and similar methods are simply available\nwithout needing to remember referencing such as `configuration._events.on`, however the extended\nevent emitted is also available as _events to allow for key collision if needed.\n\nAdditionally, this module binds a listener to the \"SIGHUP\" Process Event to trigger configuration\nreload events.",
             "itemtype": "main",
             "extends": "EventEmitter",
             "is_constructor": 1,
@@ -51,7 +51,7 @@
             "namespace": "",
             "file": "lib\\index.js",
             "line": 3,
-            "description": "Configurations load in 2 stages.\n\nThe first stage is a blocking file read to provide base data for the application and base configurations\nas described by the system.\n\nThe second stage is to load data from extended data sources in a non-blocking fashion. A `_await`\nproperty is provided as a Promise to allow for waiting for the full configuration load if desired. \n\nNote that as this extends an EventEmitter, colliding key names should be avoided, such as \"on\" and\n\"once\". Due to the nature of the EventEmitter properties and for simplicity, Configuration merely\nextends the EventEmitter class so that `configuration.on` and similar methods are simply available\nwithout needing to remember referencing such as `configuration._events.on`, however the extended\nevent emitted is also available as _events to allow for key collision if needed.",
+            "description": "Configurations load in 2 stages.\n\nThe first stage is a blocking file read to provide base data for the application and base configurations\nas described by the system.\n\nThe second stage is to load data from extended data sources in a non-blocking fashion. A `_await`\nproperty is provided as a Promise to allow for waiting for the full configuration load if desired. \n\nNote that as this extends an EventEmitter, colliding key names should be avoided, such as \"on\" and\n\"once\". Due to the nature of the EventEmitter properties and for simplicity, Configuration merely\nextends the EventEmitter class so that `configuration.on` and similar methods are simply available\nwithout needing to remember referencing such as `configuration._events.on`, however the extended\nevent emitted is also available as _events to allow for key collision if needed.\n\nAdditionally, this module binds a listener to the \"SIGHUP\" Process Event to trigger configuration\nreload events.",
             "mainName": "",
             "tag": "main",
             "itemtype": "main",
@@ -62,17 +62,17 @@
     "classitems": [
         {
             "file": "lib\\index.js",
-            "line": 37,
+            "line": 36,
             "description": "Provides a reference to the extended event emitter to allow for key collisions\noff of the configuration object itself.",
             "itemtype": "property",
-            "name": "_events",
+            "name": "_emitter",
             "type": "EventEmitter",
             "class": "Configuration",
             "module": "a-configuration"
         },
         {
             "file": "lib\\index.js",
-            "line": 45,
+            "line": 44,
             "description": "Maps event names to their current name for consistency.",
             "itemtype": "property",
             "name": "_events",
@@ -84,7 +84,19 @@
         },
         {
             "file": "lib\\index.js",
-            "line": 58,
+            "line": 55,
+            "description": "Tracks included javascript file configurations so that reloads can be triggered\nvia their functional invocations.",
+            "itemtype": "property",
+            "name": "loaded",
+            "type": "Object",
+            "access": "private",
+            "tagname": "",
+            "class": "Configuration",
+            "module": "a-configuration"
+        },
+        {
+            "file": "lib\\index.js",
+            "line": 64,
             "description": "Called after the first completion of the second load stage.",
             "itemtype": "method",
             "name": "initialized.success",
@@ -95,7 +107,7 @@
         },
         {
             "file": "lib\\index.js",
-            "line": 63,
+            "line": 69,
             "description": "Called if the first completion of the second load stage resulted in an exception.",
             "itemtype": "method",
             "name": "initialized.failure",
@@ -113,7 +125,7 @@
         },
         {
             "file": "lib\\index.js",
-            "line": 71,
+            "line": 77,
             "description": "Called after the first completion of the second load stage.",
             "itemtype": "property",
             "name": "_await",
@@ -123,7 +135,7 @@
         },
         {
             "file": "lib\\index.js",
-            "line": 83,
+            "line": 89,
             "itemtype": "method",
             "name": "readJSON",
             "access": "private",
@@ -144,26 +156,9 @@
         },
         {
             "file": "lib\\index.js",
-            "line": 107,
+            "line": 111,
             "itemtype": "method",
-            "name": "loadFile",
-            "access": "private",
-            "tagname": "",
-            "params": [
-                {
-                    "name": "file",
-                    "description": "Filename to load",
-                    "type": "String"
-                }
-            ],
-            "class": "Configuration",
-            "module": "a-configuration"
-        },
-        {
-            "file": "lib\\index.js",
-            "line": 126,
-            "itemtype": "method",
-            "name": "isJSON",
+            "name": "getExt",
             "access": "private",
             "tagname": "",
             "params": [
@@ -182,49 +177,7 @@
         },
         {
             "file": "lib\\index.js",
-            "line": 139,
-            "itemtype": "method",
-            "name": "loadMongo",
-            "access": "private",
-            "tagname": "",
-            "return": {
-                "description": "",
-                "type": "Promise"
-            },
-            "class": "Configuration",
-            "module": "a-configuration"
-        },
-        {
-            "file": "lib\\index.js",
-            "line": 159,
-            "itemtype": "method",
-            "name": "loadRedis",
-            "access": "private",
-            "tagname": "",
-            "return": {
-                "description": "",
-                "type": "Promise"
-            },
-            "class": "Configuration",
-            "module": "a-configuration"
-        },
-        {
-            "file": "lib\\index.js",
-            "line": 179,
-            "itemtype": "method",
-            "name": "loadPostgresql",
-            "access": "private",
-            "tagname": "",
-            "return": {
-                "description": "",
-                "type": "Promise"
-            },
-            "class": "Configuration",
-            "module": "a-configuration"
-        },
-        {
-            "file": "lib\\index.js",
-            "line": 199,
+            "line": 122,
             "itemtype": "method",
             "name": "loadFailed",
             "access": "private",
@@ -245,13 +198,13 @@
         },
         {
             "file": "lib\\index.js",
-            "line": 207,
+            "line": 130,
             "itemtype": "event",
             "name": "loaded",
             "params": [
                 {
                     "name": "conf",
-                    "description": "The configuration that finished loading.",
+                    "description": "This configuration that finished loading.",
                     "type": "Configuration"
                 }
             ],
@@ -260,7 +213,7 @@
         },
         {
             "file": "lib\\index.js",
-            "line": 216,
+            "line": 144,
             "itemtype": "method",
             "name": "loadFailed",
             "params": [
@@ -279,13 +232,14 @@
         },
         {
             "file": "lib\\index.js",
-            "line": 223,
+            "line": 151,
+            "description": "Thrown in the case of an error in any stage.",
             "itemtype": "event",
-            "name": "errored",
+            "name": "failed",
             "params": [
                 {
                     "name": "conf",
-                    "description": "The configuration that finished loading.",
+                    "description": "This configuration that finished loading.",
                     "type": "Configuration"
                 },
                 {
@@ -299,7 +253,7 @@
         },
         {
             "file": "lib\\index.js",
-            "line": 233,
+            "line": 166,
             "itemtype": "method",
             "name": "loadConfigurations",
             "access": "private",
@@ -309,14 +263,16 @@
         },
         {
             "file": "lib\\index.js",
-            "line": 259,
-            "itemtype": "event",
-            "name": "started",
+            "line": 174,
+            "itemtype": "method",
+            "name": "loadFile",
+            "access": "private",
+            "tagname": "",
             "params": [
                 {
-                    "name": "conf",
-                    "description": "The configuration that finished loading.",
-                    "type": "Configuration"
+                    "name": "file",
+                    "description": "Filename to load.",
+                    "type": "String"
                 }
             ],
             "class": "Configuration",
@@ -324,15 +280,16 @@
         },
         {
             "file": "lib\\index.js",
-            "line": 288,
-            "description": "This event can occur more than once.",
-            "itemtype": "event",
-            "name": "initialized",
+            "line": 212,
+            "itemtype": "method",
+            "name": "resolveConfiguration",
+            "access": "private",
+            "tagname": "",
             "params": [
                 {
                     "name": "conf",
-                    "description": "The configuration that finished loading.",
-                    "type": "Configuration"
+                    "description": "Configuration to resolve against the current export.",
+                    "type": "Object"
                 }
             ],
             "class": "Configuration",
@@ -340,10 +297,37 @@
         },
         {
             "file": "lib\\index.js",
-            "line": 305,
+            "line": 312,
+            "description": "When true, the configuration is updating its values. This does not block\nthe values from being used, but does indicate that the module is busy and\noperations that would cause further updates should be blocked.",
+            "itemtype": "property",
+            "name": "reloading",
+            "type": "{Boolean}",
+            "class": "Configuration",
+            "module": "a-configuration"
+        },
+        {
+            "file": "lib\\index.js",
+            "line": 321,
+            "description": "Indicate if the configuration module is currently updating.\n\nThis currently responds to the following states:  \n+ reloading",
+            "itemtype": "method",
+            "name": "isLocked",
+            "return": {
+                "description": "",
+                "type": "Boolean"
+            },
+            "class": "Configuration",
+            "module": "a-configuration"
+        },
+        {
+            "file": "lib\\index.js",
+            "line": 334,
             "description": "Update the configurations.\n\nThis will cause all configuration sources to be read again and then applied\nover the current configuration. Which will change values that exist but will\nin general not delete values.\n\nSpecifically this will not remove values at the first, or second level due to\nthe way in which the configurations are assembled. Keys at the third level or\ndeeper will fall off _IF_ the second level key has an update applied.",
             "itemtype": "method",
             "name": "_reload",
+            "return": {
+                "description": "Resolves with the final status of the configuration loading;\n\t\tSee: \"loaded\" and \"error\" events.",
+                "type": "Promise"
+            },
             "class": "Configuration",
             "module": "a-configuration"
         }
