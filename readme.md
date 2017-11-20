@@ -82,7 +82,7 @@ JSON files are used directly and can simply be edited for configuration reloadin
 
 ### Javascript Modules
 
-Javascript files must specify a module.exports with a function `resolve` that returns a promise to be included. If the exported module does not have a resolve function, it won't be included. If the "resolve" field is not a function, an error will be thrown and if the function doesn't return a Promise, the configuration will not be applied.
+Javascript files must specify a module.exports with a function `resolve` that returns a promise to be included and optionally takes an argument for the configuration object to be passed to it (This is the recommended way to get the Configuration object instead of requiring "a-configuration" in the module itself). If the exported module does not have a resolve function, it won't be included. If the "resolve" field is not a function, an error will be thrown and if the function doesn't return a Promise, the configuration will not be applied.
 
 The Promise returned by `resolve` must complete with an object representing the configuration to be applied, and then the object acts the same as a JSON file as far as applying values to the exported configuration is concerned.
 
@@ -203,3 +203,68 @@ Then the configuration will resolve as:
 	}
 }
 ```
+
+## JSON and Javascript Files
+
+For this example lets assume there is the following:  
++ app/configuration/databases.json
+```json
+{
+	"mongo": {
+		"host": "mongo.example.com"
+	},
+	"redis": {
+		"host": "redis.example.com"
+	}
+}
+```
++ app/configuration/connect.js
+```javascript
+var mongo = require("mongo");
+var redis = require("redis");
+
+module.exports.resolve = function(configuration) {
+	return new Promise(function(done, fail) {
+		Promise.all([
+			mongo.connect(configuration.mongo),
+			redis.connect(configuration.redis)
+		])
+		.then(function(connections) {
+			configuration.mongo.connection = connections[0];
+			configuration.redis.connection = connections[1];
+			done();
+		})
+		.catch(fail);
+	});
+};
+```
+
+Then the configuration will _initially_ resolve as:
+```json
+{
+	"mongo": {
+		"host": "mongo.example.com"
+	},
+	"redis": {
+		"host": "redis.example.com"
+	}
+}
+```
+
+The connections will still be processing when `require("a-configuration")` finishes. Once _await completes or the "loaded" event fires, the configuration will _finally_ resolve as something similar to:
+```json
+{
+	"mongo": {
+		"host": "mongo.example.com",
+		"connection": [object MongoConnection]
+	},
+	"redis": {
+		"host": "redis.example.com",
+		"connection": [object RedisConnection]
+	}
+}
+```
+
+&#9888; Note!
+
+The "Mongo" and "Redis" modules in the example above do NOT reflect how those modules aare actually used. See their documentation for usage and examples.
