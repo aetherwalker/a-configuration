@@ -5,7 +5,7 @@
 
 In Brief; This module exists to simplify and consolidate various files in a directory and to leverage other paths for generalized configuration.
 
-Specifically, this module merges JSON files in various directories ("app/configuration/" by default) into a single exported module for reference while also merging default "global" JSON files (Omitted by default) as well to allow for "system" level configuration to be applied along with the "application" level configuration.
+Specifically, this module merges JSON and Javascript files in various directories ("app/configuration/" by default) into a single exported module for reference while also merging default "global" JSON Javascript files (Omitted by default) as well to allow for "system" level configuration to be applied along with the "application" level configuration.
 
 # Getting Started
 
@@ -25,6 +25,41 @@ In your Node project, create an `app` directory and in that directory create a `
 
 Modify your `package.json` file by adding the key `aconfiguration` and then specify the keys you wish to override:
 
+#### final
+Type: `String`  
+Aliases: finish  
+Default: -
+
+Relative file path to configurations to be loaded _last_ and will overwrite any previously written values.
+
+#### application
+Type: `String`  
+Aliases: app, locals, directory  
+Default: "app/configuration/"
+
+Relative file path to where the "app" configurations are located. These configurations are applied _second to last_ and will overwrite any previously written values.
+
+#### files
+Type: `Array of Strings`  
+Aliases: -  
+Default: -
+
+An array of relative or absolute file paths to apply to the configuration in the specified order. These are applied after the system configurations and before the application configurations.
+
+#### system
+Type: `String`  
+Aliases: sys, globals  
+Default: null
+
+Relative or absolute file path to where the configurations the host are located. These configurations are applied _second_ and can be overwritten by similar keys in later configurations.
+
+#### masks
+Type: `String`  
+Aliases: initial  
+Default: -
+
+Relative or absolute file path that specifies an initial mask for the configuration. This is applied _first_ and can be overwritten by similar keys in later configurations.
+
 #### application
 Type: `String`  
 Aliases: app, locals, directory  
@@ -32,19 +67,28 @@ Default: "app/configuration/"
 
 Relative file path to where the "app" configurations are located. These configurations are applied _last_ and will overwrite any previously written values.
 
-#### system
-Type: `String`  
-Aliases: sys, globals  
-Default: null
-
-Relative file path to where the "local" configurations are for your application. These configurations are applied _first_ and can be overwritten by similar keys in local configurations.
-
 #### ignore
 Type: `String`  
 Aliases: -  
 Default: "_"
 
 Used to determine if the _first_ character of a key indicates if that key should be ignored. By default, only the '_' character indicates that a key should be ignored. So if a configuration file has the key '_' at the top level, then that key will not be added to the configuration. The ignore character does not apply to key names below the top level.
+
+## Implementing Configurations
+
+### JSON Files
+
+JSON files are used directly and can simply be edited for configuration reloading.
+
+### Javascript Modules
+
+Javascript files must specify a module.exports with a function `resolve` that returns a promise to be included. If the exported module does not have a resolve function, it won't be included. If the "resolve" field is not a function, an error will be thrown and if the function doesn't return a Promise, the configuration will not be applied.
+
+The Promise returned by `resolve` must complete with an object representing the configuration to be applied, and then the object acts the same as a JSON file as far as applying values to the exported configuration is concerned.
+
+If there is a problem with generating the configuration in the module, fail the Promise and the configuration will error out accordingly. Note that this will result in an `error` event, but it will not block the configuration from loading the hard JSON files.
+
+Additionally, note that `resolve` can be called multiple times as this function will be how configuration reloads are handled.
 
 # Examples
 

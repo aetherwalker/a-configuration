@@ -58,7 +58,6 @@ describe("Application configuration", function() {
 			expect(configuration.key3.k3c).toBe(source[0].key3.k3c);
 		});
 
-		/* Sub-Key Arrays */
 		it("Maps sub-key arrays", function() {
 			expect(configuration.key3.k32[0]).toBe(source[0].key3.k32[0]);
 			expect(configuration.key3.k32[1]).toBe(source[0].key3.k32[1]);
@@ -104,6 +103,7 @@ describe("Application configuration", function() {
 		});
 	});
 
+	// TODO:
 	// Module tests pending resolution of https://github.com/felixge/node-sandboxed-module/issues/64
 	xdescribe("containing application configuration modules", function() {
 		beforeEach(function() {

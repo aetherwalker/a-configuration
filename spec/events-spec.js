@@ -55,7 +55,8 @@ describe("Event emission", function() {
 			})
 			.catch(done);
 		});
-		
+
+		// TODO:
 		// Module tests pending resolution of https://github.com/felixge/node-sandboxed-module/issues/64
 		xit("Fails the _await promise for failed module resolutions", function(done) {
 			module.error = new Error();
@@ -93,6 +94,7 @@ describe("Event emission", function() {
 			});
 		});
 
+		// TODO:
 		// Module tests pending resolution of https://github.com/felixge/node-sandboxed-module/issues/64
 		it("Emits a loaded event when complete with module", function(done) {
 			fs.directories["app/configuration/"] = ["one.json", "three.js"];
