@@ -96,7 +96,7 @@ describe("Event emission", function() {
 
 		// TODO:
 		// Module tests pending resolution of https://github.com/felixge/node-sandboxed-module/issues/64
-		it("Emits a loaded event when complete with module", function(done) {
+		xit("Emits a loaded event when complete with module", function(done) {
 			fs.directories["app/configuration/"] = ["one.json", "three.js"];
 			configuration = testConfiguration();
 			configuration.on("failed", function(err) {
