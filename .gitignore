@@ -2,6 +2,10 @@
 .project
 .idea*
 
+# Unit Test Reports
+spec/reports
+spec/report
+
 # Logs
 logs
 *.log
