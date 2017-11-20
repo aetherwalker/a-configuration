@@ -216,6 +216,8 @@
             "line": 144,
             "itemtype": "method",
             "name": "loadFailed",
+            "access": "private",
+            "tagname": "",
             "params": [
                 {
                     "name": "exception",
@@ -232,7 +234,7 @@
         },
         {
             "file": "lib\\index.js",
-            "line": 151,
+            "line": 152,
             "description": "Thrown in the case of an error in any stage.",
             "itemtype": "event",
             "name": "failed",
@@ -253,7 +255,7 @@
         },
         {
             "file": "lib\\index.js",
-            "line": 166,
+            "line": 167,
             "itemtype": "method",
             "name": "loadConfigurations",
             "access": "private",
@@ -263,7 +265,7 @@
         },
         {
             "file": "lib\\index.js",
-            "line": 174,
+            "line": 175,
             "itemtype": "method",
             "name": "loadFile",
             "access": "private",
@@ -280,7 +282,7 @@
         },
         {
             "file": "lib\\index.js",
-            "line": 212,
+            "line": 213,
             "itemtype": "method",
             "name": "resolveConfiguration",
             "access": "private",
@@ -297,20 +299,24 @@
         },
         {
             "file": "lib\\index.js",
-            "line": 312,
+            "line": 313,
             "description": "When true, the configuration is updating its values. This does not block\nthe values from being used, but does indicate that the module is busy and\noperations that would cause further updates should be blocked.",
             "itemtype": "property",
             "name": "reloading",
             "type": "{Boolean}",
+            "access": "private",
+            "tagname": "",
             "class": "Configuration",
             "module": "a-configuration"
         },
         {
             "file": "lib\\index.js",
-            "line": 321,
+            "line": 323,
             "description": "Indicate if the configuration module is currently updating.\n\nThis currently responds to the following states:  \n+ reloading",
             "itemtype": "method",
             "name": "isLocked",
+            "access": "private",
+            "tagname": "",
             "return": {
                 "description": "",
                 "type": "Boolean"
@@ -320,7 +326,7 @@
         },
         {
             "file": "lib\\index.js",
-            "line": 334,
+            "line": 337,
             "description": "Update the configurations.\n\nThis will cause all configuration sources to be read again and then applied\nover the current configuration. Which will change values that exist but will\nin general not delete values.\n\nSpecifically this will not remove values at the first, or second level due to\nthe way in which the configurations are assembled. Keys at the third level or\ndeeper will fall off _IF_ the second level key has an update applied.",
             "itemtype": "method",
             "name": "_reload",

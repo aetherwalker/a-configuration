@@ -227,6 +227,7 @@ var loadFinished = function() {
 /**
  * 
  * @method loadFailed
+ * @private
  * @param {Error} exception
  * @return {Promise}
  */
@@ -398,6 +399,7 @@ var loadConfigurations = function() {
  * operations that would cause further updates should be blocked.
  * @property reloading
  * @type {Boolean}
+ * @private
  */
 var reloading = false;
 
@@ -408,6 +410,7 @@ var reloading = false;
  * + reloading
  * 
  * @method isLocked
+ * @private
  * @return {Boolean}
  */
 var isLocked = function() {
