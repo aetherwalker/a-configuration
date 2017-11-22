@@ -127,6 +127,7 @@ Then the configuration will resolve as:
 		"host": "redis.example.com"
 	}
 }
+```
 
 Now if we add another file; app/configuration/login.json:
 ```json
@@ -272,4 +273,4 @@ The connections will still be processing when `require("a-configuration")` finis
 
 &#9888; Note!
 
-The "Mongo" and "Redis" modules in the example above do NOT reflect how those modules aare actually used. See their documentation for usage and examples.
+The "Mongo" and "Redis" modules in the example above do NOT reflect how those modules are actually used. See their documentation for usage and examples.
