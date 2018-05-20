@@ -26,6 +26,8 @@ See [NodeJS documentation](https://nodejs.org/api/events.html#events_class_event
 
 See [GitHub Pages](https://aetherwalker.github.io/a-configuration/) for the a-configuration API.
 
+Note that files in a directory are ordered lexicographically, so if priority between files is needed, use numeric prefixing to guarantee load order; ie. [ "00-package.js", "10-logger.js", "20-database.js" ] .
+
 ### Simple Case
 
 In your Node project, create an `app` directory and in that directory create a `configuration` directory [app/configuration] and place any JSON or javascript files in that directory that you wish to use to specify configuration values.

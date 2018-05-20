@@ -1,6 +1,6 @@
 {
   "name": "a-configuration",
-  "version": "1.1.2",
+  "version": "1.1.21",
   "description": "For quick configurations based on a set file structure",
   "main": "index.js",
   "scripts": {
