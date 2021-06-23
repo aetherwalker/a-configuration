@@ -2,7 +2,6 @@
 
 [![Version npm](https://img.shields.io/npm/v/a-configuration.svg)](https://www.npmjs.com/package/a-configuration)
 [![Build Status](https://secure.travis-ci.org/aetherwalker/a-configuration.png)](http://travis-ci.org/aetherwalker/a-configuration)
-[![Dependency Status](https://david-dm.org/aetherwalker/a-configuration.svg)](https://david-dm.org/aetherwalker/a-configuration)
 
 In Brief; This module exists to simplify and consolidate various files in a directory and to leverage other paths for generalized configuration and extends the [NodeJS EventEmitter](https://nodejs.org/api/events.html#events_class_eventemitter) class to offer update events.
 
