@@ -32,6 +32,12 @@ In your Node project, create an `app` directory and in that directory create a `
 
 See the examples below or check out the [Wiki on Github](https://github.com/aetherwalker/a-configuration/wiki) for additional information.
 
+### Process Case
+
+The local and global configuration directories can be specified in the process arguments.
++ --config:global For the relative path to the global configuration directory
++ --config:local For the relative path to the local configuration directory
+
 ### Custom Case
 
 Modify your `package.json` file by adding the key `aconfiguration` and then specify the keys you wish to override:
